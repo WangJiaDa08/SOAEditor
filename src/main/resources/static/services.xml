@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<architecture>
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="services.xsd">
+    <ecu Nofgpu ="1" id = "ECU1">
+        ECU1
+        <flash unit = "MiB">
+            10
+        </flash>
+        <cpu ASIL = "QM" id = "CPU1">
+            CPU1
+            <clock>
+                1.5
+            </clock>
+            <RAM unit = "GB">
+                8
+            </RAM>
+        </cpu>
+        <cpu ASIL = "B" refid = "CPU2"></cpu>
+    </ecu>
+
+    <cpu id = "CPU2">
+        CPU2
+        <clock>
+            1.5
+        </clock>
+        <RAM unit = "GB">
+            8
+        </RAM>
+    </cpu>
+
+
+</architecture>

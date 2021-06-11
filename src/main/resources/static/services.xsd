@@ -1,0 +1,187 @@
+<?xml version="1.0"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+	<xsd:element name="ecu">
+		<xsd:complexType mixed="true">
+			<xsd:sequence>
+                <xsd:element name="flash" type="data"/>
+                <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+                    <xsd:element ref="cpu"/>
+                </xsd:sequence>
+			</xsd:sequence>
+			<xsd:attribute name="Nofgpu" type="xsd:positiveInteger" use="required"/>
+            <xsd:attribute name="id" type="xsd:ID"></xsd:attribute>
+            <xsd:attribute name="refid" type="xsd:IDREF"></xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+
+    <xsd:element name="cpu" type="cpuType"/>
+
+    <xsd:complexType name="data" mixed="true">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:positiveInteger">
+                <xsd:attribute name="unit" default="MiB">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                            <xsd:enumeration value="MiB"/>
+                            <xsd:enumeration value="MB"/>
+                            <xsd:enumeration value="GiB"/>
+                            <xsd:enumeration value="GB"/>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:simpleContent>       
+    </xsd:complexType>
+
+    <xsd:complexType name="cpuType" mixed="true">
+        <xsd:all minOccurs="1">
+            <xsd:element name="clock" type="speed"/>
+            <xsd:element name="RAM" type="data"/>
+        </xsd:all>
+        <xsd:attribute name="ASIL" type="asilType" use="required"/>
+        <xsd:attribute name="id" type="xsd:ID"></xsd:attribute>
+        <xsd:attribute name="refid" type="xsd:IDREF"></xsd:attribute>
+    </xsd:complexType>
+
+    <xsd:simpleType name="asilType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="QM"/>
+            <xsd:enumeration value="A"/>
+            <xsd:enumeration value="B"/>
+            <xsd:enumeration value="C"/>
+            <xsd:enumeration value="D"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+	<xsd:complexType name="speed">
+        <xsd:simpleContent>
+            <xsd:extension base="xsd:decimal">
+                <xsd:attribute name="unit" default="GHz">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                            <xsd:enumeration value="GHz"/>
+                            <xsd:enumeration value="MHz"/>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:simpleContent>
+    </xsd:complexType>
+
+    <xsd:element name="connexion">
+        <xsd:complexType>
+            <xsd:sequence minOccurs="2" maxOccurs="2">
+                <xsd:element ref="ecu"/>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="service">
+        <xsd:complexType mixed="true">
+            <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+                <xsd:element name="serviceInterface" type="serviceInterfaceType"/>
+            </xsd:sequence>
+            <xsd:attribute name="hardwareDependence" type="xsd:boolean" use="optional"/>
+            <xsd:attribute name="onboard" type="xsd:boolean" use="optional"/>
+            <xsd:attribute name="function" type="functionType" use="optional"/>
+            <xsd:attribute name="ASIL" type="asilType" use="required"/>
+            <xsd:attribute name="security" type="securityType" use="optional"/>
+            <xsd:attribute name="real-time" type="xsd:boolean" use="optional"/>
+            <xsd:attribute name="id" type="xsd:ID"></xsd:attribute>
+            <xsd:attribute name="refid" type="xsd:IDREF"></xsd:attribute>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:simpleType name="functionType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="powertrain"/>
+            <xsd:enumeration value="driverAssistance"/>
+            <xsd:enumeration value="interior"/>
+            <xsd:enumeration value="telematics"/>
+            <xsd:enumeration value="crossFunctional"></xsd:enumeration>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="securityType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="wireLevel"/>
+            <xsd:enumeration value="authentification"/>
+            <xsd:enumeration value="serviceLevel"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+	
+    <xsd:complexType name="serviceInterfaceType" mixed="true"> 
+        <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+            <xsd:element name="serviceInterfaceElement" type="serviceInterfaceElementType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="serviceInterfaceElementType" mixed="true">
+        <xsd:sequence>
+            <xsd:element name="input" type="xsd:anySimpleType"/>
+            <xsd:element name="output" type="xsd:anySimpleType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:element name="binding">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element ref="service"/>
+                <xsd:element ref="cpu"></xsd:element>
+            </xsd:sequence>
+            <xsd:attribute name="id" type="xsd:ID"></xsd:attribute>
+            <xsd:attribute name="refid" type="xsd:IDREF"></xsd:attribute>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="atomicGroup">
+        <xsd:complexType mixed="true">
+            <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+                <xsd:element ref="service"/>
+            </xsd:sequence>
+            <xsd:attribute name="hardwareDependence" type="xsd:boolean" use="optional"/>
+            <xsd:attribute name="onboard" type="xsd:boolean" use="optional"/>
+            <xsd:attribute name="function" type="functionType" use="optional"/>
+            <xsd:attribute name="ASIL" type="asilType" use="optional"/>
+            <xsd:attribute name="security" type="securityType" use="optional"/>
+            <xsd:attribute name="real-time" type="xsd:boolean" use="optional"/>
+            <xsd:attribute name="id" type="xsd:ID"></xsd:attribute>
+            <xsd:attribute name="refid" type="xsd:IDREF"></xsd:attribute>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="compositeGroup">
+        <xsd:complexType mixed="true">
+            <xsd:choice minOccurs="1" maxOccurs="unbounded">
+                <xsd:element ref="atomicGroup"/>
+                <xsd:element ref="compositeGroup"/>     
+            </xsd:choice>
+            <xsd:attribute name="hardwareDependence" type="xsd:boolean" use="optional"/>
+            <xsd:attribute name="onboard" type="xsd:boolean" use="optional"/>
+            <xsd:attribute name="function" type="functionType" use="optional"/>
+            <xsd:attribute name="ASIL" type="asilType" use="optional"/>
+            <xsd:attribute name="security" type="securityType" use="optional"/>
+            <xsd:attribute name="real-time" type="xsd:boolean" use="optional"/>
+            <xsd:attribute name="id" type="xsd:ID"></xsd:attribute>
+            <xsd:attribute name="refid" type="xsd:IDREF"></xsd:attribute>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="architecture">
+        <xsd:complexType mixed="true">
+            <xsd:choice minOccurs="1" maxOccurs="unbounded">
+                <xsd:element ref="ecu"/>
+                <xsd:element ref="connexion"/>
+                <xsd:element ref="service"/>
+                <xsd:element ref="binding"/>
+                <xsd:element ref="atomicGroup"/>
+                <xsd:element ref="compositeGroup"/>
+            </xsd:choice>
+            <xsd:attribute name="id" type="xsd:ID"></xsd:attribute>
+            <xsd:attribute name="refid" type="xsd:IDREF"></xsd:attribute>
+        </xsd:complexType>
+    </xsd:element>
+
+</xsd:schema>

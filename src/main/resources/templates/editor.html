@@ -1,0 +1,1320 @@
+<!DOCTYPE HTML>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8">
+
+    <link rel="stylesheet" href="interface.css">
+
+    <title>New System</title>
+
+</head>
+
+<body onload="createXml()">
+
+    <h1 id="title">New System</h1>
+    <div id="Options">
+        <button id="Rename">Rename System</button>
+        <button id="Save">Save system</button>
+        <button id="ShowHardware">Show ECUs/CPUs</button>
+        <button id="ShowService">Show Services</button>
+        <button id="ShowGroup">Show Groups</button>
+        <button id="Clear">Clear</button>
+    </div>
+    <script>
+        var renameButton = document.getElementById("Rename")
+        var saveButton = document.getElementById("Save")
+        var showECUButton = document.getElementById("ShowHardware")
+        var showServiceButton = document.getElementById("ShowService")
+        var showGroupButton = document.getElementById("ShowGroup")
+        var clearButton = document.getElementById("Clear")
+
+        clearButton.onclick = function(){
+            var systemGraph = document.getElementById("Svg").children
+            var sysGraphLength = systemGraph.length
+            var serviceList = document.getElementById("ListOfServices").children
+            var serviceListLength = serviceList.length
+            var listLength = listOfElements.length
+        
+            for(var e = 0; e < sysGraphLength; e++){
+                systemGraph[0].remove();
+            }
+            
+            for(var f = 0; f < serviceListLength; f++){ 
+                serviceList[0].remove();
+            }
+            for(var g = 0; g < listLength; g++){
+                listOfElements.splice(0,1)
+            }
+            
+        }
+
+        showECUButton.onclick = function(){
+            var systemGraph = document.getElementById("Svg").children
+            var sysGraphLength = systemGraph.length
+
+            for(var d = 0; d < sysGraphLength; d++){
+                if(systemGraph[d].classList.contains("ecu")){
+                    systemGraph[d].style.display = "block"
+                }else{
+                    systemGraph[d].style.display = "none"
+                }
+            }
+        }
+
+        showServiceButton.onclick = function(){
+            var systemGraph = document.getElementById("Svg").children
+            var sysGraphLength = systemGraph.length
+
+            for(var d = 0; d < sysGraphLength; d++){
+                if(systemGraph[d].classList.contains("service")){
+                    systemGraph[d].style.display = "block"
+                }else{
+                    systemGraph[d].style.display = "none"
+                }
+            }
+        }
+
+        showGroupButton.onclick = function(){
+            var systemGraph = document.getElementById("Svg").children
+            var sysGraphLength = systemGraph.length
+
+            for(var d = 0; d < sysGraphLength; d++){
+                if(systemGraph[d].classList.contains("group")){
+                    systemGraph[d].style.display = "block"
+                }else{
+                    systemGraph[d].style.display = "none"
+                }
+            }
+        }
+    </script>
+    <script>
+        /*
+        function loadTitle(){
+            var title = [[${systemName}]] ;
+            alert(title);
+            
+            document.getElementById("title").innerHTML = title;
+        }*/
+
+        /*function createXml(){
+            var xmlDoc = document.implementation.createDocument(null,"architecture",null);
+            var ECU = document.createElement("ecu");
+            var ECUname = document.createTextNode("ECU1");
+
+            ECU.appendChild(ECUname);
+            xmlDoc.appendChild(ECU);
+
+            var xml = new XMLSerializer().serializeToString(xmlDoc);
+
+            console.log(xml);
+
+        }*/
+        
+    </script>
+
+    <!--Window where the button to create parts of the systems are located-->
+    <div id="CreateButtons">
+        <button id="CreateECU">New ECU</button><br>
+        <button id="CreateService" >New Service</button><br>
+        <button id="CreateGroup">New Group</button>
+    </div>
+
+    <div id="ListOfServices">
+        &nbsp;
+    </div>
+
+
+    <!--Space where the model is drawn-->
+    <div id="GraphicModel">
+        <svg id = "Svg" width="2000" height="1000" onload="makeDraggable(evt)">
+            
+        </svg>
+    </div>
+
+
+
+    <!--Space where the current objects attributes are shown-->
+    <div id="Attributes">
+        &nbsp;
+        <div id="ECUAtt">
+            <span>Flash:</span><span id="FlashValue"></span><br>
+            <span>Number of GPU:</span><span id="GpuValue"></span><br>
+            <span>CPUs:</span><span id="CPUValue"></span><br>
+            <span id="ParentECU"></span>
+            <button id="EditECU" onclick="editECU()">Edit</button>
+            <button id="AddCPU">Add CPU</button>
+            <button id="BindECU">Link ECU</button>
+        </div>
+        <div id="CPUAtt">
+            <span>Clockspeed:</span><span id="ClockValue"></span><br>
+            <span>RAM:</span><span id="RAMValue"></span><br>
+            <span>ASIL:</span><span id="ASILValue"></span><br>
+            <button id="EditCPU">Edit</button>
+        </div>
+        <div id="ServiceAtt">
+            <span>ServiceInterfaces: </span> <!--Needs Dropdown list--><br>
+            <span id="Value1Label">Attribute 1:</span><span id="Value1"></span><br id="br1">
+            <span id="Value2Label">Attribute 2:</span><span id="Value2"></span><br id="br2">
+            <span id="Value3Label">Attribute 3:</span><span id="Value3"></span><br id="br3">
+            <span id="Value4Label">Attribute 4:</span><span id="Value4"></span><br id="br4">
+            <span id="Value5Label">Attribute 5:</span><span id="Value5"></span><br id="br5">
+            <span id="Value6Label">Attribute 6:</span><span id="Value6"></span><br id="br6">
+            <span id="ServiceName"></span>
+            <button id="EditService" onclick="addElement()">Edit</button>
+            <button id="SetServiceInterfaces" >Develop</button>
+        </div>
+        <div id="GroupAtt">
+            <span>Type:</span><span id="GroupType"></span><br>
+            <span id="GAtt1">Attribute 1:</span><span id="GroupValue1"></span><br id="Gbr1">
+            <span id="GAtt2">Attribute 2:</span><span id="GroupValue2"></span><br id="Gbr2">
+            <span id="GAtt3">Attribute 3:</span><span id="GroupValue3"></span><br id="Gbr3">
+            <span id="GAtt4">Attribute 4:</span><span id="GroupValue4"></span><br id="Gbr4">
+            <span id="GAtt5">Attribute 5:</span><span id="GroupValue5"></span><br id="Gbr5">
+            <span id="GAtt6">Attribute 6:</span><span id="GroupValue6"></span><br id="Gbr6">
+            <button id="AddElement">Add element</button>
+            <button id="EditGroup">Edit</button>
+        </div>
+    </div>
+
+    <script>
+        
+    </script>
+
+    <!--Pop-up to create an ECU-->
+    <div id="ECUModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form action="" onsubmit="NewECU(); return false">
+                <label for="ECUid">Name</label>
+                <input type="text" id="ECUid"><br>
+                <label for="Flash">Flash: </label>
+                <input type="number" id="Flash" min="0"><br>
+                <label for="FlashUnit">Unit (MiB by default): </label>
+                <input list="units" id="FlashUnit"><br>
+                <label for="NbOfGPU">Number of GPUs:</label>
+                <input type="number" id="NbOfGPU" min="0"><br>
+                <button id="CreateECUBtn" type="submit" >Create</button>
+            </form>
+        </div>
+    </div>
+
+    <datalist id="units">
+        <option value="MiB">
+        <option value="GiB">
+        <option value="Mb">
+        <option value="Gb">                
+    </datalist>
+
+    <datalist id="speed">
+        <option value="GHz">
+        <option value="MHz">
+    </datalist>
+
+    <datalist id="asilType">
+        <option value="A">
+        <option value="B">
+        <option value="C">
+        <option value="D">
+        <option value="QM">
+    </datalist>
+
+    <datalist id="listOfECU">
+
+    </datalist>
+
+    <div id="CPUModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form action="" onsubmit="newCPU(document.getElementById('ParentECU').textContent); return false">
+                <label for="CPUid">Name</label>
+                <input type="text" id="CPUid"><br>
+                <label for="Clockspeed">Clockspeed: </label>
+                <input type="number" id="Clockspeed" min="0"><br>
+                <label for="Clock">Unit</label>
+                <input list="speed" id="Clock"><br>
+                <label for="RAM">RAM: </label>
+                <input type="number" id="RAM" min="0"><br>
+                <label for="RAMUnit">Unit</label>
+                <input list="units" id="RAMUnit"><br>
+                <label for="ASIL">ASIL: </label>
+                <input list="asilType" id="ASIL"><br>
+                <button id="CreateCPUBtn" type="submit">Create</button>
+            </form>
+        </div>
+    </div>
+
+    <script> 
+        var ECUModal = document.getElementById("ECUModal")
+        var CreateECU = document.getElementById("CreateECU")
+        var close0 = document.getElementsByClassName("close")[0]
+
+        CreateECU.onclick = function(){
+            ECUModal.style.display = "block";
+        }
+
+        close0.onclick = function(){
+            ECUModal.style.display = "none"
+        }
+
+        window.onclick = function(event) {
+            if (event.target == ECUModal) {
+                ECUModal.style.display = "none";
+            }
+        }
+
+        var CPUModal = document.getElementById("CPUModal")
+        var CreateCPU = document.getElementById("AddCPU")
+        var close1 = document.getElementsByClassName("close")[1]
+
+        CreateCPU.onclick = function(){
+            CPUModal.style.display = "block"
+        }
+
+        close1.onclick = function(){
+            CPUModal.style.display = "none"
+        }
+
+        window.onclick = function(event) {
+            if (event.target == CPUModal) {
+                CPUModal.style.display = "none";
+            }
+        }
+        
+        // Creates the visual representation of an ECU.
+        function NewECU(){
+            if((document.getElementById("ECUid").value == "")||(document.getElementById("Flash").value == "")||(document.getElementById("NbOfGPU").value == "")){
+                alert("Missing attributes");
+            }else{
+                for (var c = 0; c < arrayOfECU.length; c++){
+                    if(arrayOfECU[c] == document.getElementById("ECUid").value){
+                    sameECUName = true;
+                    }
+                }
+
+                if(sameECUName == false){
+                    var svg = document.getElementById("Svg");
+                    var rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    var group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                    var text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    var flash = document.getElementById("Flash").value;
+                    var flashUnit; 
+
+                    if (document.getElementById("FlashUnit").value == ""){
+                        flashUnit = "MiB";
+                    }else{
+                        flashUnit = document.getElementById("FlashUnit").value;
+                    }
+
+                    var gpu = document.getElementById("NbOfGPU").value;
+                    var id = document.getElementById("ECUid").value;
+                
+                    text.setAttributeNS(null, "font-size", 45);
+                    text.textContent = id;
+                    text.setAttributeNS(null, "x", 500);
+                    text.setAttributeNS(null, "y", 100);
+
+                    rect.setAttributeNS(null, "x", 500 - (text.getAttributeNS(null, "font-size")/2));
+                    rect.setAttributeNS(null, "y", 100 - (text.getAttributeNS(null, "font-size")*1.25));
+                    rect.setAttributeNS(null,"width", (text.getAttributeNS(null, "font-size")*text.textContent.length)+1);
+                    rect.setAttributeNS(null,"height", text.getAttributeNS(null, "font-size")*2);
+                    rect.setAttributeNS(null,"fill","green");
+                    rect.setAttributeNS(null,"stroke","black");
+                    rect.setAttributeNS(null, "id", text.textContent);
+
+                    group.setAttributeNS(null, "class", "draggable-group ecu")
+
+
+                    group.appendChild(rect);
+                    group.appendChild(text);
+                    svg.appendChild(group);
+
+                    group.addEventListener("click", function() {
+                        document.getElementById("ECUAtt").style.display = "block";
+                        document.getElementById("ServiceAtt").style.display = "none";
+                        document.getElementById("CPUAtt").style.display = "none";
+                        document.getElementById("GroupAtt").style.display = "none";
+                        changeECUAtt(flash, flashUnit, gpu, id);
+                    });
+                    
+
+                    arrayOfECU.push(id);
+                    updateECUList();
+
+                    document.getElementById("ECUid").value = null;
+                    document.getElementById("Flash").value = null;
+                    document.getElementById("FlashUnit").value = null;
+                    document.getElementById("NbOfGPU").value = null;
+                    ECUModal.style.display = "none"
+                }
+                else{
+                    alert("ECU wit hthe same name already")
+                    sameECUName = false;
+                }
+
+            }
+        }
+
+        function changeECUAtt(flash, flashUnit, gpu, id){
+            document.getElementById("FlashValue").textContent = " " + flash + " " + flashUnit;
+            document.getElementById("GpuValue").textContent = " " + gpu;
+            document.getElementById("ParentECU").textContent = id;
+        }
+
+
+
+        function newCPU(ECU){ 
+            if ((document.getElementById("CPUid").value == "")||(document.getElementById("Clockspeed").value == "")||(document.getElementById("RAM").value == "")||(document.getElementById("ASIL").value == "")){
+                alert("Missing Attributes");
+            }else{
+                var ecu = document.getElementById(ECU);
+                var cpu = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                var cpuText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                var clockSpeed = document.getElementById("Clockspeed").value;
+                var clockUnit = document.getElementById("Clock").value;
+                var ram = document.getElementById("RAM").value;
+                var ramUnit = document.getElementById("RAMUnit").value;
+                var asil = document.getElementById("ASIL").value;
+                var cpuId = document.getElementById("CPUid").value;
+                var cpuGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+
+                if(clockUnit == ""){
+                    clockUnit = "MiB";
+                }
+
+                if(ramUnit == ""){
+                    ramUnit = "GHz"
+                }
+
+                cpuText.setAttributeNS(null, "font-size", 25);
+                cpuText.textContent = cpuId;
+                cpuText.setAttributeNS(null, "x", Number(ecu.getAttribute("x"))+ Number(cpuText.getAttributeNS(null, "font-size")));
+                cpuText.setAttributeNS(null,"y", Number(ecu.getAttribute("y")) + Number(ecu.getAttribute("height")) + Number(cpuText.getAttributeNS(null, "font-size")));
+                cpu.setAttributeNS(null, "x", ecu.getAttribute("x"));
+                cpu.setAttributeNS(null,"y", Number(ecu.getAttribute("y")) + Number(ecu.getAttribute("height")));
+                cpu.setAttributeNS(null, "width", (cpuText.getAttributeNS(null, "font-size")*cpuText.textContent.length)+1);
+                cpu.setAttributeNS(null,"height", cpuText.getAttributeNS(null, "font-size")*2);
+                cpu.setAttributeNS(null,"fill","blue");
+                cpu.setAttributeNS(null,"stroke","black");
+                ecu.setAttributeNS(null, "height", Number(ecu.getAttributeNS(null, "height")) + Number(cpu.getAttributeNS(null, "height")));
+                if(Number(cpu.getAttributeNS(null,"width")) > Number(ecu.getAttributeNS(null, "width"))){
+                    ecu.setAttributeNS(null, "width", Number(cpu.getAttributeNS(null, "width")));
+                }
+
+                cpuGroup.appendChild(cpu);
+                cpuGroup.appendChild(cpuText);
+                ecu.parentElement.appendChild(cpuGroup);
+
+                cpuGroup.addEventListener("click", function(){
+                    document.getElementById("CPUAtt").style.display = "block";
+                    document.getElementById("ECUAtt").style.display = "none";
+                    document.getElementById("ServiceAtt").style.display = "none";
+                    document.getElementById("GroupAtt").style.display = "none";
+                    changeCPUAtt(clockSpeed, clockUnit, ram, ramUnit, asil);
+                    event.stopPropagation();
+                });
+                
+                document.getElementById("CPUid").value = null;
+                document.getElementById("Clockspeed").value = null;
+                document.getElementById("Clock").value = null;
+                document.getElementById("RAM").value = null;
+                document.getElementById("RAMUnit").value = null;
+                document.getElementById("ASIL").value = null;
+                CPUModal.style.display = "none"
+
+            }
+
+        }
+
+        function changeCPUAtt(clockSpeed, clockUnit, ram, ramUnit, asil){
+            document.getElementById("ClockValue").textContent = " " + clockSpeed + " " + clockUnit;
+            document.getElementById("RAMValue").textContent = " " + ram + " " + ramUnit;
+            document.getElementById("ASILValue").textContent = " " + asil;
+        }
+    
+    </script>
+
+
+    <!--Pop-up to create a Service-->
+    <div id="ServiceModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form action="" onsubmit="NewService(); return false">
+                <label for="ServiceId">Name</label>
+                <input type="text" id="ServiceId"><br>
+                <label for="hardware">HardwareDependence</label>
+                <input list="boolean" id="hardware"><br>
+                <label for="onboard">Onboard</label>
+                <input list="boolean" id="onboard"><br>
+                <label for="function">Function</label>
+                <input list="functionTypes" id="function"><br>
+                <label for="ASILService">ASIL</label>
+                <input list="asilType" id="ASILService"><br>
+                <label for="Security">Security</label>
+                <input list="securityType" id="Security"><br>
+                <label for="real-time">Real-time requirements</label>
+                <input list="boolean" id="real-time"><br>
+                <button id="CreateServiceBtn" type="submit" >Create</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        var ServiceModal = document.getElementById("ServiceModal")
+        var CreateService = document.getElementById("CreateService")
+        var close2 = document.getElementsByClassName("close")[2]
+
+        CreateService.onclick = function(){
+            ServiceModal.style.display = "block"
+        }
+
+        close2.onclick = function(){
+            ServiceModal.style.display = "none"
+        }
+
+        window.onclick = function(event) {
+            if (event.target == ServiceModal) {
+                ServiceModal.style.display = "none";
+            }
+        }
+        
+        function NewService(){
+            if(document.getElementById("ServiceId") == ""){
+                alert("Missing attributes")
+            }
+            for (var j = 0; j < listOfElements.length; j++){
+                if(listOfElements[j] == document.getElementById("ServiceId").value){
+                    sameName = true;
+                }
+            }
+            if(sameName == false){
+                var svg = document.getElementsByTagName("svg")[0];
+                var elli = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+                var groupService = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                var textService = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                
+                var hardware = document.getElementById("hardware").value;
+                var onboard = document.getElementById("onboard").value;
+                var serviceFunction = document.getElementById("function").value;
+                var asil = document.getElementById("ASILService").value;
+                var security = document.getElementById("Security").value;
+                var realTime = document.getElementById("real-time").value;
+                var id = document.getElementById("ServiceId").value;
+            
+                listOfElements.push(document.getElementById("ServiceId").value);
+                updateList();
+
+
+                textService.setAttributeNS(null, "font-size", 45);
+                textService.textContent = id;
+                textService.setAttributeNS(null, "x", 500);
+                textService.setAttributeNS(null, "y", 100);
+                textService.setAttributeNS(null, "id", id+"Text");
+
+                elli.setAttributeNS(null, "cx", 500 + (textService.getAttributeNS(null, "font-size")*textService.textContent.length/5));
+                elli.setAttributeNS(null, "cy", 50 + (textService.getAttributeNS(null, "font-size")*1));
+                elli.setAttributeNS(null,"rx", (textService.getAttributeNS(null, "font-size")*textService.textContent.length/3));
+                elli.setAttributeNS(null,"ry", textService.getAttributeNS(null, "font-size"));
+                elli.setAttributeNS(null,"fill","orange");
+                elli.setAttributeNS(null,"stroke","black");
+                elli.setAttributeNS(null, "id", id);
+
+
+                groupService.setAttributeNS(null, "class", "draggable-group service");
+
+        
+                groupService.appendChild(elli);
+                groupService.appendChild(textService);
+                svg.appendChild(groupService);
+
+                elli.addEventListener("click", function(){
+                    document.getElementById("ServiceAtt").style.display = "block"
+                    document.getElementById("ECUAtt").style.display = "none";
+                    document.getElementById("CPUAtt").style.display = "none";
+                    document.getElementById("GroupAtt").style.display = "none";
+                    changeServiceAtt(hardware, onboard, serviceFunction, asil, security, realTime, id);
+                    event.stopPropagation();
+                });
+                textService.addEventListener("click", function(){
+                    document.getElementById("ServiceAtt").style.display = "block"
+                    document.getElementById("ECUAtt").style.display = "none";
+                    document.getElementById("CPUAtt").style.display = "none";
+                    document.getElementById("GroupAtt").style.display = "none";
+                    changeServiceAtt(hardware, onboard, serviceFunction, asil, security, realTime, id);
+                    event.stopPropagation();
+                });
+
+                document.getElementById("ServiceId").value = null;
+                document.getElementById("hardware").value = null;
+                document.getElementById("onboard").value = null;
+                document.getElementById("function").value = null;
+                document.getElementById("ASILService").value = null;
+                document.getElementById("Security").value = null;
+                document.getElementById("real-time").value = null;
+
+                var serviceDiv = document.createElementNS(null, "div");
+                var serviceColl = document.createElementNS(null, "button");
+                serviceColl.innerHTML = id;
+                serviceColl.type = "button";
+                serviceColl.setAttributeNS(null, "id", "Coll");
+                serviceColl.className = "collapsible";
+                serviceDiv.setAttributeNS(null, "id", id+"Div");
+
+                document.getElementById("ListOfServices").appendChild(serviceDiv);
+                serviceDiv.appendChild(serviceColl);
+                serviceDiv.appendChild(document.createElement("br"));
+                addBreak();
+                ServiceModal.style.display = "none";
+            }else{
+                alert("Service or group with the same name already exists.");
+                sameName = false;
+            }
+
+        }
+
+        function addBreak(){
+            var br = document.createElement("br");
+            var list = document.getElementById("ListOfServices");
+            list.appendChild(br);
+        }
+
+        function changeServiceAtt(hardware, onboard, serviceFunction, ASILService, security, realTime, id){
+            document.getElementById("ServiceName").textContent = id;
+            if( hardware != ""){
+                document.getElementById("Value1").textContent = hardware;
+                document.getElementById("Value1Label").textContent = "Hardware Dependent : ";
+                document.getElementById("Value1").style.display = "inline";
+                document.getElementById("Value1Label").style.display = "inline";
+                document.getElementById("br1").style.display = "inline";
+            }else{
+                document.getElementById("Value1").style.display = "none";
+                document.getElementById("Value1Label").style.display = "none";
+                document.getElementById("br1").style.display = "none";
+            }
+
+            if( onboard != ""){
+                document.getElementById("Value2").textContent = onboard;
+                document.getElementById("Value2Label").textContent = "Onboard : ";
+                document.getElementById("Value2").style.display = "inline";
+                document.getElementById("Value2Label").style.display = "inline";
+                document.getElementById("br2").style.display = "inline";
+            }else{
+                document.getElementById("Value2").style.display = "none";
+                document.getElementById("Value2Label").style.display = "none";
+                document.getElementById("br2").style.display = "none";
+            }
+
+            if( serviceFunction != ""){
+                document.getElementById("Value3").textContent = serviceFunction;
+                document.getElementById("Value3Label").textContent = "Function : ";
+                document.getElementById("Value3").style.display = "inline";
+                document.getElementById("Value3Label").style.display = "inline";
+                document.getElementById("br3").style.display = "inline";
+            }else{
+                document.getElementById("Value3").style.display = "none";
+                document.getElementById("Value3Label").style.display = "none";
+                document.getElementById("br3").style.display = "none";
+            }
+
+            if( ASILService != ""){
+                document.getElementById("Value4").textContent = ASILService;
+                document.getElementById("Value4Label").textContent = "ASIL : ";
+                document.getElementById("Value4").style.display = "inline";
+                document.getElementById("Value4Label").style.display = "inline";
+                document.getElementById("br4").style.display = "inline";
+            }else{
+                document.getElementById("Value4").style.display = "none";
+                document.getElementById("Value4Label").style.display = "none";
+                document.getElementById("br4").style.display = "none";
+            }
+
+            if( security != ""){
+                document.getElementById("Value5").textContent = security;
+                document.getElementById("Value5Label").textContent = "Security : ";
+                document.getElementById("Value5").style.display = "inline";
+                document.getElementById("Value5Label").style.display = "inline";
+                document.getElementById("br5").style.display = "inline";
+            }else{
+                document.getElementById("Value5").style.display = "none";
+                document.getElementById("Value5Label").style.display = "none";
+                document.getElementById("br5").style.display = "none";
+            }
+
+            if( realTime != ""){
+                document.getElementById("Value6").textContent = realTime;
+                document.getElementById("Value6Label").textContent = "Real-time requirements : ";
+                document.getElementById("Value6").style.display = "inline";
+                document.getElementById("Value6Label").style.display = "inline";
+                document.getElementById("br6").style.display = "inline";
+            }else{
+                document.getElementById("Value6").style.display = "none";
+                document.getElementById("Value6Label").style.display = "none";
+                document.getElementById("br6").style.display = "none";
+            }
+        }
+    </script>
+
+    <datalist id="functionTypes">
+        <option value="Powertrain"></option>
+        <option value="DriverAssistance"></option>
+        <option value="Interior"></option>
+        <option value="Telematics"></option>
+        <option value="CrossFunctional"></option>
+    </datalist>
+
+    <datalist id="securityType">
+        <option value="WireLevel">
+        <option value="Authentification">
+        <option value="ServiceLevel">
+    </datalist>
+
+    <datalist id="boolean">
+        <option value="true"></option>
+        <option value="false"></option>
+    </datalist>
+
+    <!--Pop-up to create a Group-->
+    <div id="GroupModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form action="" onsubmit="newGroup(); return false">
+                <label for="GroupId">Name</label>
+                <input type="text" id="GroupId"><br>
+                <label for="GroupHardware">HardwareDependence</label>
+                <input list="boolean" id="GroupHardware"><br>
+                <label for="GroupOnboard">Onboard</label>
+                <input list="boolean" id="GroupOnboard"><br>
+                <label for="GroupFunction">Function</label>
+                <input list="functionTypes" id="GroupFunction"><br>
+                <label for="GroupASIL">ASIL</label>
+                <input list="asilType" id="GroupASIL"><br>
+                <label for="GroupSecurity">Security</label>
+                <input list="securityType" id="GroupSecurity"><br>
+                <label for="GroupRealTime">Real-time requirements</label>
+                <input list="boolean" id="GroupRealTime"><br>
+                <button id="CreateGroupBtn" type="submit" >Create</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        var GroupModal = document.getElementById("GroupModal")
+        var CreateGroup = document.getElementById("CreateGroup")
+        var close3 = document.getElementsByClassName("close")[3]
+
+        CreateGroup.onclick = function(){
+            GroupModal.style.display = "block"
+        }
+
+        close3.onclick = function(){
+            GroupModal.style.display = "none"
+        }
+
+        window.onclick = function(event) {
+            if (event.target == GroupModal) {
+                GroupModal.style.display = "none";
+            }
+        }
+
+        function newGroup(){
+
+            if(document.getElementById("GroupId") == ""){
+                alert("Missing attributes")
+            }
+            for (var j = 0; j < listOfElements.length; j++){
+                if(listOfElements[j] == document.getElementById("GroupId").value){
+                    sameName = true;
+                }
+            }
+            if (sameName == false){
+                var svg = document.getElementById("Svg");
+                var roundRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                var group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+                var groupTitle = document.createElementNS("http://www.w3.org/2000/svg", "text");
+
+                var groupId = document.getElementById("GroupId").value
+                var hardware = document.getElementById("GroupHardware").value;
+                var onboard = document.getElementById("GroupOnboard").value;
+                var serviceFunction = document.getElementById("GroupFunction").value;
+                var asil = document.getElementById("GroupASIL").value;
+                var security = document.getElementById("GroupSecurity").value;
+                var realTime = document.getElementById("GroupRealTime").value;
+
+                
+                listOfElements.push(document.getElementById("GroupId").value);
+                updateList();
+                
+
+                groupTitle.setAttributeNS(null, "font-size", 45);
+                groupTitle.textContent = groupId;
+                groupTitle.setAttributeNS(null, "x", 500);
+                groupTitle.setAttributeNS(null, "y", 100);
+
+                roundRect.setAttributeNS(null, "x", 450);
+                roundRect.setAttributeNS(null, "y", 50);
+
+                groupTitle.setAttributeNS(null, "font-size", 45);
+                groupTitle.textContent = document.getElementById("GroupId").value;
+                groupTitle.setAttributeNS(null, "x", 500);
+                groupTitle.setAttributeNS(null, "y", 100);
+                groupTitle.setAttributeNS(null, "id", groupId+"Text");
+
+                roundRect.setAttributeNS(null,"width", groupTitle.getAttributeNS(null, "font-size")*groupTitle.textContent.length);
+                roundRect.setAttributeNS(null, "height", groupTitle.getAttributeNS(null, "font-size")*2);
+                roundRect.setAttributeNS(null, "rx", 20);
+                roundRect.setAttributeNS(null, "ry", 20);
+                roundRect.setAttributeNS(null,"fill","greenyellow");
+                roundRect.setAttributeNS(null,"stroke","black");
+
+                roundRect.setAttributeNS(null, "id", groupId);
+                group.setAttributeNS(null, "class", "draggable-group group")
+
+
+                group.appendChild(roundRect);
+                group.appendChild(groupTitle);
+                svg.appendChild(group);
+
+                document.getElementById("GroupId").value = null;
+                document.getElementById("GroupHardware").value = null;
+                document.getElementById("GroupOnboard").value = null;
+                document.getElementById("GroupFunction").value = null;
+                document.getElementById("GroupASIL").value = null;
+                document.getElementById("GroupSecurity").value = null;
+                document.getElementById("GroupRealTime").value = null;
+
+                roundRect.addEventListener("click", function(){
+                    document.getElementById("GroupAtt").style.display = "block";
+                    document.getElementById("ServiceAtt").style.display = "none";
+                    document.getElementById("ECUAtt").style.display = "none";
+                    document.getElementById("CPUAtt").style.display = "none";
+                    changeGroupAtt(hardware, onboard, serviceFunction, asil, security, realTime);
+                    currentGroup = document.getElementById(groupId);
+                    event.stopPropagation();
+                });
+
+                groupTitle.addEventListener("click", function(){
+                    document.getElementById("GroupAtt").style.display = "block";
+                    document.getElementById("ServiceAtt").style.display = "none";
+                    document.getElementById("ECUAtt").style.display = "none";
+                    document.getElementById("CPUAtt").style.display = "none";
+                    changeGroupAtt(hardware, onboard, serviceFunction, asil, security, realTime);
+                    currentGroup = document.getElementById(groupId);
+                    event.stopPropagation();
+                });
+                
+
+                GroupModal.style.display = "none";
+            }
+            else{
+                alert("Service or group with the same name already exists.");
+                sameName = false;
+            }
+
+
+        }
+
+        function changeGroupAtt(hardware, onboard, serviceFunction, ASILService, security, realTime){
+            if( hardware != ""){
+                document.getElementById("GroupValue1").textContent = hardware;
+                document.getElementById("GAtt1").textContent = "Hardware Dependent : ";
+                document.getElementById("GroupValue1").style.display = "inline";
+                document.getElementById("GAtt1").style.display = "inline";
+                document.getElementById("Gbr1").style.display = "inline";
+            }else{
+                document.getElementById("GroupValue1").style.display = "none";
+                document.getElementById("GAtt1").style.display = "none";
+                document.getElementById("Gbr1").style.display = "none";
+            }
+
+            if( onboard != ""){
+                document.getElementById("GroupValue2").textContent = onboard;
+                document.getElementById("GAtt2").textContent = "Onboard : ";
+                document.getElementById("GroupValue2").style.display = "inline";
+                document.getElementById("GAtt2").style.display = "inline";
+                document.getElementById("Gbr2").style.display = "inline";
+            }else{
+                document.getElementById("GroupValue2").style.display = "none";
+                document.getElementById("GAtt2").style.display = "none";
+                document.getElementById("Gbr2").style.display = "none";
+            }
+
+            if( serviceFunction != ""){
+                document.getElementById("GroupValue3").textContent = serviceFunction;
+                document.getElementById("GAtt3").textContent = "Function : ";
+                document.getElementById("GroupValue3").style.display = "inline";
+                document.getElementById("GAtt3").style.display = "inline";
+                document.getElementById("Gbr3").style.display = "inline";
+            }else{
+                document.getElementById("GroupValue3").style.display = "none";
+                document.getElementById("GAtt3").style.display = "none";
+                document.getElementById("Gbr3").style.display = "none";
+            }
+
+            if( ASILService != ""){
+                document.getElementById("GroupValue4").textContent = ASILService;
+                document.getElementById("GAtt4").textContent = "ASIL : ";
+                document.getElementById("GroupValue4").style.display = "inline";
+                document.getElementById("GAtt4").style.display = "inline";
+                document.getElementById("Gbr4").style.display = "inline";
+            }else{
+                document.getElementById("GroupValue4").style.display = "none";
+                document.getElementById("GAtt4").style.display = "none";
+                document.getElementById("Gbr4").style.display = "none";
+            }
+
+            if( security != ""){
+                document.getElementById("GroupValue5").textContent = security;
+                document.getElementById("GAtt5").textContent = "Security : ";
+                document.getElementById("GroupValue5").style.display = "inline";
+                document.getElementById("GAtt5").style.display = "inline";
+                document.getElementById("Gbr5").style.display = "inline";
+            }else{
+                document.getElementById("GroupValue5").style.display = "none";
+                document.getElementById("GAtt5").style.display = "none";
+                document.getElementById("Gbr5").style.display = "none";
+            }
+
+            if( realTime != ""){
+                document.getElementById("GroupValue6").textContent = realTime;
+                document.getElementById("GAtt6").textContent = "Real-time requirements : ";
+                document.getElementById("GroupValue6").style.display = "inline";
+                document.getElementById("GAtt6").style.display = "inline";
+                document.getElementById("Gbr6").style.display = "inline";
+            }else{
+                document.getElementById("GroupValue6").style.display = "none";
+                document.getElementById("GAtt6").style.display = "none";
+                document.getElementById("Gbr6").style.display = "none";
+            }
+        }
+    </script>
+
+    <div id="ElementModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form action="" onsubmit='AddElement(currentGroup ,document.getElementById(document.getElementById("ElementList").value)); return false'>
+                <label for="ElementList">Element to add :</label>
+                <input list="ListOfElements" id="ElementList">
+                <button id="AddElementBtn" type="submit">Add</button>
+            </form>
+        </div>
+    </div>
+
+    <datalist id="ListOfElements">
+
+    </datalist>
+
+    <script>
+        var currentGroup;
+        var string = "";
+        var listOfElements = [];
+        var sameName = false;
+        var elementDataList = document.getElementById("ListOfElements");
+
+        function updateList(){
+            string += '<option value="'+listOfElements[listOfElements.length-1]+'" />';  
+            elementDataList.innerHTML = string;
+        }
+
+        var ElementModal = document.getElementById("ElementModal")
+        var CreateElement = document.getElementById("AddElement")
+        var close4 = document.getElementsByClassName("close")[4]
+
+        CreateElement.onclick = function(){
+            ElementModal.style.display = "block"
+        }
+
+        close4.onclick = function(){
+            ElementModal.style.display = "none"
+        }
+
+        window.onclick = function(event) {
+            if (event.target == ElementModal) {
+                ElementModal.style.display = "none";
+            }
+        }
+
+        function AddElement(targetGroup, element){
+            var elementToAdd = element;
+            var textToAdd = document.getElementById(document.getElementById("ElementList").value+"Text");
+            var newGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            var containsElement = false
+
+            if (elementToAdd.getAttributeNS(null, "id") == targetGroup.getAttributeNS(null, "id")){
+                alert("A group can't add itself.");
+            }
+            else{
+                for(var k = 0; k < targetGroup.parentNode.childNodes.length; k++){
+                    if(targetGroup.parentNode.childNodes[k].getAttributeNS(null, "id") == elementToAdd.getAttributeNS(null, "id")){
+                        containsElement = true;
+                    }
+                }
+                
+                if(containsElement){
+                    alert("Element is already in the group");
+                    containsElement = false;
+                }else{
+                    if(elementToAdd == "[object SVGRectElement]"){
+                        elementToAdd.setAttributeNS(null, "x", targetGroup.getAttributeNS(null, "x"));
+                        elementToAdd.setAttributeNS(null, "y", Number(targetGroup.getAttributeNS(null, "y")) + Number(targetGroup.getAttributeNS(null, "height")));
+                        textToAdd.setAttributeNS(null, "x", Number(targetGroup.getAttributeNS(null, "x"))+50);
+                        textToAdd.setAttributeNS(null, "y", Number(targetGroup.getAttributeNS(null, "y")) + Number(targetGroup.getAttributeNS(null, "height"))+50);
+
+                        targetGroup.setAttributeNS(null, "height", Number(targetGroup.getAttributeNS(null, "height")) + Number(elementToAdd.getAttributeNS(null, "height")));
+                        if (Number(elementToAdd.getAttributeNS(null, "width")) > Number(targetGroup.getAttributeNS(null, "width"))){
+                            targetGroup.setAttributeNS(null, "width", elementToAdd.getAttributeNS(null, "width"));
+                        }
+                    }
+                    else{
+                        alert(elementToAdd.tagName)
+                        elementToAdd.setAttributeNS(null, "cx", Number(targetGroup.getAttributeNS(null, "x")) + Number(elementToAdd.getAttributeNS(null, "rx")) );
+                        elementToAdd.setAttributeNS(null, "cy", Number(targetGroup.getAttributeNS(null, "y")) + Number(targetGroup.getAttributeNS(null, "height")) + Number(elementToAdd.getAttributeNS(null, "ry")));
+                        textToAdd.setAttributeNS(null, "x", Number(targetGroup.getAttributeNS(null, "x"))+50);
+                        textToAdd.setAttributeNS(null, "y", Number(targetGroup.getAttributeNS(null, "y")) + Number(targetGroup.getAttributeNS(null, "height"))+50);
+
+                        targetGroup.setAttributeNS(null, "height", Number(targetGroup.getAttributeNS(null, "height")) + Number(elementToAdd.getAttributeNS(null, "ry")*2));
+                        alert("resize done")
+                        if (Number(elementToAdd.getAttributeNS(null, "rx")*2) > Number(targetGroup.getAttributeNS(null, "width"))){
+                            targetGroup.setAttributeNS(null, "width", elementToAdd.getAttributeNS(null, "rx")*2);
+                        }
+                    }
+                
+                }
+                
+                
+
+                newGroup.setAttributeNS(null, "id", elementToAdd.getAttributeNS(null, "id"));
+                newGroup.appendChild(elementToAdd);
+                newGroup.appendChild(textToAdd);
+                targetGroup.parentNode.append(newGroup);
+                //alert(newGroup == "[object SVGGElement]");
+
+                /*for(var l; l < newGroup.childNodes.length; l++){
+                    if (newGroup.childNodes[l] == "[object SVGGElement]"){
+                        var embeddedElement = newGroup.childNodes[l];
+                        for(var m; m < embeddedElement.childNodes.length; m++){
+                            if (embeddedElement.childNodes[k].type == "[object SVGRectElement]"){
+                                AddElement(embeddedElement.childNodes[k]);
+                            }
+                        }
+                    }
+                }*/
+
+            }
+        }
+    </script>
+
+    <div id="InterfaceModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form action="" onsubmit='AddServiceInterface(document.getElementById("ServiceInterface").value); return false'>
+                <label for="ServiceInterface">Service interface name : </label>
+                <input type="text" id="ServiceInterface">
+                <button id="ServiceInterfaceBtn" type="submit">Add service interface</button><br>
+            </form>
+            <form action="" onsubmit="AddServiceInterfaceElement(); return false" id="ServiceInterfaceElementForm">
+                <label for="TargetServiceInterface">Target service interface</label>
+                <input type="text" id="TargetServiceInterface"><br>
+                <label for="ServiceInterfaceElementName">Service interface element name :</label>
+                <input type="text" id="ServiceInterfaceElementName"><br>
+                <label for="InputType">Input type</label>
+                <input type="text" id="InputType"><br>
+                <label for="OutputType">Output type</label>
+                <input type="text" id="OutputType"><br>
+                <button id="ServiceInterfaceElementBtn" type="submit">Add service interface element</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        var interfaceModal = document.getElementById("InterfaceModal")
+        var createInterface = document.getElementById("SetServiceInterfaces")
+        var close5 = document.getElementsByClassName("close")[5]
+
+        createInterface.onclick = function(){
+            interfaceModal.style.display = "block";
+        }
+
+        close5.onclick = function(){
+            interfaceModal.style.display = "none";
+            document.getElementById("ServiceInterface").value = null;
+            document.getElementById("TargetServiceInterface").value = null;
+            document.getElementById("ServiceInterfaceElementName").value = null;
+            document.getElementById("InputType").value = null;
+            document.getElementById("OutputType").value = null;
+        }
+
+        window.onclick = function(event) {
+            if (event.target == interfaceModal) {
+                interfaceModal.style.display = "none";
+            }
+        }
+        
+
+        function AddServiceInterface(serviceInterfaceName){
+        
+            if (serviceInterfaceName == ""){
+                alert("Missing Name")
+            }else{
+                var serviceInterface = document.createElementNS(null, "button");
+                var serviceList = document.getElementById("ListOfServices");
+                var elementForm = document.getElementById("ServiceInterfaceElementForm");
+                var targetService = document.getElementById("ServiceName").textContent;
+
+                var serviceContent = document.createElementNS(null, "div");
+                serviceContent.className = "content";
+                serviceContent.setAttributeNS(null, "id", "CollContent");
+                serviceContent.setAttributeNS(null, "name", serviceInterfaceName);
+
+                serviceInterface.className = "collapsible";
+                serviceInterface.setAttributeNS(null, "id", "Coll")
+                serviceInterface.textContent = "\xa0\xa0"+serviceInterfaceName;
+
+                for (var n = 0; n < serviceList.children.length; n++){  
+                    if(serviceList.children[n].getAttributeNS(null, "id") == targetService+"Div"){ //serviceList.children[n] = div which contains the service collapsible
+                        serviceContent.appendChild(serviceInterface);
+                        serviceContent.appendChild(document.createElement("br"));
+                        serviceList.children[n].appendChild(serviceContent);
+                        
+                        //accessing serviceContent.style.display doesn't work somehow.
+                        /*serviceList.children[n].children[0].onclick = function(){
+                            if(serviceContent.style.display == "block"){
+                                serviceContent.style.display = "none";
+                            }else{
+                                serviceContent.style.display = "block"
+                            }
+                        } 
+                        serviceList.children[n].children[0].addEventListener("click", function(){
+                            if(serviceContent.style.display == "block"){
+                                serviceContent.style.display = "none";
+                            }else{
+                                serviceContent.style.display = "block"
+                            }
+
+                        })*/
+                    }
+                }
+
+                if(elementForm.style.display != "block"){ //display = null here
+                    elementForm.style.display = "block";
+                }
+            }
+        }
+
+        function AddServiceInterfaceElement(){
+
+            var targetSI = document.getElementById("TargetServiceInterface").value;
+            var serviceIEName = document.getElementById("ServiceInterfaceElementName").value;
+            var inputType = document.getElementById("InputType").value;
+            var outputType = document.getElementById("OutputType").value;
+
+            if ((targetSI == "")||(serviceIEName == "")||(inputType == "")||(outputType == "")){
+                alert("Missing attributes")
+            }
+            else{
+                var targetServiceDiv = document.getElementsByName(targetSI);
+
+                var serviceIContent = document.createElementNS(null, "div");
+                var serviceIEBtn = document.createElementNS(null, "button");
+                var serviceIEContent = document.createElementNS(null, "div");
+                var inputLabel = document.createElementNS(null, "button");
+                var outputLabel = document.createElementNS(null, "button");
+
+                serviceIContent.className = "content";
+                serviceIContent.setAttributeNS(null, "id", "SICollContent");
+
+                serviceIEBtn.className = "collapsible";
+                serviceIEBtn.setAttributeNS(null, "id", "Coll");
+                serviceIEBtn.textContent = "\xa0\xa0\xa0\xa0"+serviceIEName;
+
+                serviceIEContent.className = "content";
+                serviceIEContent.setAttributeNS(null, "id", "SICollContent");
+
+                inputLabel.setAttributeNS(null, "id", "Coll");
+                inputLabel.textContent = "\xa0\xa0\xa0\xa0\xa0\xa0"+ "Input : " +inputType;
+                outputLabel.setAttributeNS(null, "id", "Coll");
+                outputLabel.textContent = "\xa0\xa0\xa0\xa0\xa0\xa0"+ "Output : " +outputType;
+
+                
+                var serviceList = document.getElementById("ListOfServices");
+
+
+                serviceIEContent.appendChild(inputLabel);
+                serviceIEContent.appendChild(document.createElement("br"));
+                serviceIEContent.appendChild(outputLabel);
+                serviceIContent.appendChild(serviceIEBtn);
+                serviceIContent.appendChild(serviceIEContent);
+                targetServiceDiv[0].appendChild(serviceIContent);
+                /*
+                for (var n = 0; n < serviceList.children.length; n++){
+                    alert(serviceList.children[n].getAttributeNS(null, "id") == "Service")  
+                    if(serviceList.children[n].getAttributeNS(null, "id") == "Service"){ //serviceList.children[n] = div which contains the service collapsible
+                        serviceIEContent.appendChild(inputLabel);
+                        serviceIEContent.appendChild(outputLabel);
+                        serviceIContent.appendChild(serviceIEBtn);
+                        serviceIContent.appendChild(serviceIEContent);
+                        serviceList.children[n].appendChild(serviceIContent);
+                        
+                    }
+                }
+
+            
+                /*
+                for (var p = 0 ; p < document.getElementById("ListOfServices").children.length; p++){
+                    for (let q = 0; q < document.getElementById("ListOfServices").children[p].children.length; q++) {
+                        if (document.getElementById("ListOfServices").children[p].children[q].getAttribute("name") == targetServiceDiv.getAttribute("name")){
+                            //serviceIEContent.appendChild(inputLabel);
+                            //serviceIEContent.appendChild(outputLabel);
+                            serviceIContent.appendChild(serviceIEBtn);
+                            //serviceIContent.appendChild(serviceIEContent);
+                            document.getElementById("ListOfServices").children[p].children[q].appendChild(serviceIContent);
+                        }
+                        
+                    }
+                }
+                /*
+                for (var o = 0; o < targetServiceDiv.length; o++){
+                    //serviceIEContent.appendChild(inputLabel);
+                    //serviceIEContent.appendChild(outputLabel);
+                    serviceIContent.appendChild(serviceIEBtn);
+                    //serviceIContent.appendChild(serviceIEContent);
+                    targetServiceDiv[o].appendChild(serviceIContent);
+                }*/
+
+
+            }
+
+
+            
+        }
+
+    </script>
+
+    <div id="BindingModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form action="" onsubmit='LinkECU(document.getElementById("TargetECU").value); return false'>
+                <label for="TargetECU">Target ECU : </label>
+                <input list="listOfECU" id="TargetECU">
+                <button id="LinkECUBtn" type="submit">Link</button><br>
+            </form>
+        </div>
+    </div>
+
+    <script>
+
+        var stringLink = "";
+        var arrayOfECU = [];
+        var sameECUName = false;
+        var ecuDataList = document.getElementById("listOfECU");
+
+        function updateECUList(){
+            stringLink += '<option value="'+arrayOfECU[arrayOfECU.length-1]+'" />'; 
+            ecuDataList.innerHTML = stringLink;
+        }
+
+        function LinkECU(targetECU){
+            if(document.getElementById("ParentECU").textContent == targetECU){
+                alert("An ECU cannot link with itself")
+            }
+            else{
+                var svg = document.getElementById("Svg");
+                var startingEcu = document.getElementById(document.getElementById("ParentECU").textContent)
+                var arrivalEcu = document.getElementById(targetECU)
+                var link = document.createElementNS("http://www.w3.org/2000/svg", "line")
+                var startingEcuCenterX = Number(startingEcu.getAttribute("x")) + (Number(startingEcu.getAttribute("width")/2))
+                var startingEcuCenterY = Number(startingEcu.getAttribute("y")) + (Number(startingEcu.getAttribute("height")/2))
+                var arrivalEcuCenterX = Number(arrivalEcu.getAttribute("x")) + (Number(arrivalEcu.getAttribute("width")/2))
+                var arrivalEcuCenterY = Number(arrivalEcu.getAttribute("y")) + (Number(arrivalEcu.getAttribute("height")/2))
+                
+                link.setAttributeNS(null, "x1", startingEcuCenterX)
+                link.setAttributeNS(null, "y1", startingEcuCenterY)
+                link.setAttributeNS(null, "x2", arrivalEcuCenterX)
+                link.setAttributeNS(null, "y2", arrivalEcuCenterY)
+                link.setAttributeNS(null, "stroke", "black")
+                link.setAttributeNS(null, "stroke-width", 2)
+
+                svg.appendChild(link)
+            }
+        }
+
+        var linkModal = document.getElementById("BindingModal")
+        var createLink = document.getElementById("BindECU")
+        var close6 = document.getElementsByClassName("close")[6]
+
+        createLink.onclick = function(){
+            linkModal.style.display = "block";
+        }
+
+        close6.onclick = function(){
+            linkModal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == linkModal) {
+                linkModal.style.display = "none";
+            }
+        }
+    </script>
+
+    <script type="text/javascript"> 
+        function makeDraggable(evt) {
+          var svg = evt.target;
+          svg.addEventListener('mousedown', startDrag);
+          svg.addEventListener('mousemove', drag);
+          svg.addEventListener('mouseup', endDrag);
+          svg.addEventListener('mouseleave', endDrag);
+          svg.addEventListener('touchstart', startDrag);
+          svg.addEventListener('touchmove', drag);
+          svg.addEventListener('touchend', endDrag);
+          svg.addEventListener('touchleave', endDrag);
+          svg.addEventListener('touchcancel', endDrag);
+          function getMousePosition(evt) {
+            var CurrentTransformationMatrix = svg.getScreenCTM(); //An element of coordinates (x,y) will have screen coordinates of (ax+e, dy+f)
+            if (evt.touches) { evt = evt.touches[0]; }
+            return {
+              x: (evt.clientX - CurrentTransformationMatrix.e) / CurrentTransformationMatrix.a,
+              y: (evt.clientY - CurrentTransformationMatrix.f) / CurrentTransformationMatrix.d
+            };
+          }
+          var selectedElement, offset, transform;
+          function initialiseDragging(evt) {
+              offset = getMousePosition(evt);
+              // Make sure the first transform on the element is a translate transform
+              var transforms = selectedElement.transform.baseVal;
+              if (transforms.length === 0 || transforms.getItem(0).type !== SVGTransform.SVG_TRANSFORM_TRANSLATE) {
+                // Create an transform that translates by (0, 0)
+                var translate = svg.createSVGTransform();
+                translate.setTranslate(0, 0);
+                selectedElement.transform.baseVal.insertItemBefore(translate, 0);
+              }
+              // Get initial translation
+              transform = transforms.getItem(0);
+              offset.x -= transform.matrix.e;
+              offset.y -= transform.matrix.f;
+          }
+          function startDrag(evt) {
+            if (evt.target.classList.contains('draggable')) {
+              selectedElement = evt.target;
+              initialiseDragging(evt);
+            } else if (evt.target.parentNode.classList.contains('draggable-group')) {
+              selectedElement = evt.target.parentNode;
+              initialiseDragging(evt);
+            }
+          }
+          function drag(evt) {
+            if (selectedElement) {
+              evt.preventDefault();
+              var coord = getMousePosition(evt);
+              transform.setTranslate(coord.x - offset.x, coord.y - offset.y);
+            }
+          }
+          function endDrag(evt) {
+            selectedElement = false;
+          }
+        }
+    </script>
+
+
+</body>
+</html>
